@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -28,7 +29,6 @@ public class JobData {
      * @return List of all of the values of the given field
      */
     public static ArrayList<String> findAll(String field) {
-
         // load data, if not already loaded
         loadData();
 
@@ -46,7 +46,6 @@ public class JobData {
     }
 
     public static ArrayList<HashMap<String, String>> findAll() {
-
         // load data, if not already loaded
         loadData();
 
@@ -61,18 +60,16 @@ public class JobData {
      * with "Enterprise Holdings, Inc".
      *
      * @param column   Column that should be searched.
-     * @param value Value of teh field to search for
+     * @param value Value of the field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
-
         // load data, if not already loaded
         loadData();
 
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
 
         for (HashMap<String, String> row : allJobs) {
-
             String aValue = row.get(column);
 
             if (aValue.contains(value)) {
@@ -90,26 +87,40 @@ public class JobData {
      * @return      List of all jobs with at least one field containing the value
      */
     public static ArrayList<HashMap<String, String>> findByValue(String value) {
-
         // load data, if not already loaded
         loadData();
 
-        // TODO - implement this method
-        return null;
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+        // Create a set to avoid duplicate job listings
+        HashSet<HashMap<String, String>> jobSet = new HashSet<>();
+
+        // Loop through each job
+        for (HashMap<String, String> row : allJobs) {
+            // Check each field in the job
+            for (String field : row.keySet()) {
+                // If the field contains the value, add the job to the set
+                if (row.get(field).toLowerCase().contains(value.toLowerCase())) {
+                    jobSet.add(row);
+                    break; // No need to check other fields for this job
+                }
+            }
+        }
+
+        // Convert the set back to a list
+        jobs.addAll(jobSet);
+        return jobs;
     }
 
     /**
      * Read in data from a CSV file and store it in a list
      */
     private static void loadData() {
-
         // Only load data once
         if (isDataLoaded) {
             return;
         }
 
         try {
-
             // Open the CSV file and set up pull out column header info and records
             Reader in = new FileReader(DATA_FILE);
             CSVParser parser = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
@@ -138,5 +149,5 @@ public class JobData {
             e.printStackTrace();
         }
     }
-
 }
+
