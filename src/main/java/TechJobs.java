@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -31,10 +32,10 @@ public class TechJobs {
 
             if (actionChoice == null) {
                 break;
-            } else if (actionChoice.equals("list")) {
+            } else if (Objects.equals(actionChoice, "list")) {  // Null-safe comparison
                 String columnChoice = getUserSelection("List", columnChoices);
 
-                if (columnChoice.equals("all")) {
+                if (Objects.equals(columnChoice, "all")) {  // Null-safe comparison
                     printJobs(JobData.findAll());
                 } else {
                     ArrayList<String> results = JobData.findAll(columnChoice);
@@ -54,7 +55,7 @@ public class TechJobs {
                 System.out.println("\nSearch term:");
                 String searchTerm = in.nextLine();
 
-                if (searchField.equals("all")) {
+                if (Objects.equals(searchField, "all")) {  // Null-safe comparison
                     // Call the new findByValue method
                     ArrayList<HashMap<String, String>> results = JobData.findByValue(searchTerm);
                     printJobs(results);
@@ -68,7 +69,7 @@ public class TechJobs {
     // Returns the key of the selected item from the choices Dictionary
     private static String getUserSelection(String menuHeader, HashMap<String, String> choices) {
         int choiceIdx = -1;
-        Boolean validChoice = false;
+        boolean validChoice = false;
         String[] choiceKeys = new String[choices.size()];
 
         // Put the choices in an ordered structure so we can
@@ -84,7 +85,7 @@ public class TechJobs {
 
             // Print available choices
             for (int j = 0; j < choiceKeys.length; j++) {
-                System.out.println("" + j + " - " + choices.get(choiceKeys[j]));
+                System.out.println(j + " - " + choices.get(choiceKeys[j]));
             }
 
             if (in.hasNextInt()) {
@@ -92,8 +93,7 @@ public class TechJobs {
                 in.nextLine();
             } else {
                 String line = in.nextLine();
-                boolean shouldQuit = line.equals("x");
-                if (shouldQuit) {
+                if ("x".equals(line)) {
                     return null;
                 }
             }

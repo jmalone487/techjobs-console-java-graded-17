@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -90,7 +89,6 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
         // Create a set to avoid duplicate job listings
         HashSet<HashMap<String, String>> jobSet = new HashSet<>();
 
@@ -107,8 +105,7 @@ public class JobData {
         }
 
         // Convert the set back to a list
-        jobs.addAll(jobSet);
-        return jobs;
+        return new ArrayList<>(jobSet);
     }
 
     /**
@@ -120,9 +117,8 @@ public class JobData {
             return;
         }
 
-        try {
+        try (Reader in = new FileReader(DATA_FILE)) {
             // Open the CSV file and set up pull out column header info and records
-            Reader in = new FileReader(DATA_FILE);
             CSVParser parser = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
             List<CSVRecord> records = parser.getRecords();
             Integer numberOfColumns = records.get(0).size();
@@ -146,8 +142,8 @@ public class JobData {
 
         } catch (IOException e) {
             System.out.println("Failed to load job data");
-            e.printStackTrace();
+            // More robust logging instead of printStackTrace
+            java.util.logging.Logger.getLogger(JobData.class.getName()).severe(e.getMessage());
         }
     }
 }
-
